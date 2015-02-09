@@ -1,16 +1,23 @@
 <div class="fields">
   <%
-     nat = compute_resource.networks
-     selected = ""
-	 if params['host']
-		 if params && params['host'] && params['host']['compute_attributes']
-		   selected = params['host']['compute_attributes']['VIFs']['print']
-		 elsif new.__vifs
-		   selected = new.__vifs['print']
-		 end
-	 end
+  nat = compute_resource.networks
+  selected = ""
+  if params['host']
+      ## new host
+      ## use data specified by compute profile by default
+      if new.__vifs
+	  selected = new.__vifs['print']
+      elsif params['host']['compute_attributes']
+	  selected = params['host']['compute_attributes']['VIFs']['print']
+      end
+  elsif params['controller'] == 'hosts' and params['action'] == 'edit'
+      ## edit hosts
+      selected = new.networks.map(&:name).first
+  elsif params['controller'] == 'compute_attributes'
+      ## edit compute profiles
+      selected = new.__vifs['print']
+  end
   -%>
-
   <div id='nat' class=''>
     <%= selectable_f f, :print, nat.map(&:name),
                      { :include_blank => nat.any? ? false : _("No networks"),
