@@ -1,11 +1,17 @@
 <% new = f.object
    hide_raw = ''
+   memory_min_attr = :memory_min
+   memory_max_attr = :memory_max
    if params && params['host'] && params['host']['compute_attributes'] && params['host']['compute_attributes']['custom_template_name'] != ''
      hide_raw = 'display:none;'
    end
 
    if controller_name == 'hosts'
      fields_enabled = true
+     if params['action'] == 'edit'
+       memory_min_attr = :memory_static_min
+       memory_max_attr = :memory_static_max
+     end
    elsif controller_name == 'compute_attributes'
      fields_enabled = true
    else
@@ -19,8 +25,8 @@
     <div class="fields">
       <%= text_f f, :name, :disabled => !fields_enabled, :label => 'Name' if controller_name != 'hosts' %>
       <%= selectable_f f, :vcpus_max, 1..compute_resource.max_cpu_count, {}, :class => 'input-mini', :disabled => !fields_enabled, :label => 'vCPUs' %>
-      <%= selectable_f f, :memory_min, memory_options(compute_resource.max_memory), {}, :class => 'form-control span2', :disabled => !fields_enabled, :label => 'Memory Min' %>
-      <%= selectable_f f, :memory_max, memory_options(compute_resource.max_memory), {}, :class => 'form-control span2', :disabled => !fields_enabled, :label => 'Memory Max' %>
+      <%= selectable_f f, memory_min_attr, memory_options(compute_resource.max_memory), {}, :class => 'form-control span2', :disabled => !fields_enabled, :label => 'Memory Min' %>
+      <%= selectable_f f, memory_max_attr, memory_options(compute_resource.max_memory), {}, :class => 'form-control span2', :disabled => !fields_enabled, :label => 'Memory Max' %>
     </div>
   </fieldset>
 </div>
